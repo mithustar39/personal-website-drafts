@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mithun dhanasuthan</title>
+<meta name="description" content="Mithun Dhanasuthan — computer systems engineering, Carleton University.">
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    color-scheme: light dark;
+    --paper:#faf8f4;
+    --ink:#15151a;
+    --muted:#6e6b63;
+    --faint:#a8a49a;
+    --rule:#e2ddd3;
+    --accent:#9c361f;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#121210;
+      --ink:#ecece7;
+      --muted:#9d9a91;
+      --faint:#6c6a62;
+      --rule:#302e29;
+      --accent:#e2805f;
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:56rem;margin:0 auto;padding:clamp(2.5rem,7vw,6rem) clamp(1.25rem,4vw,2.5rem) 5rem}
+
+  /* ---- masthead ---- */
+  header{margin-bottom:clamp(3rem,7vw,5.5rem)}
+  h1{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(2.1rem,7.5vw,3.6rem);
+    line-height:1.02;
+    letter-spacing:-0.022em;
+    margin:0 0 1rem;
+  }
+  .strap{
+    font-family:var(--mono);
+    font-size:.78rem;
+    letter-spacing:.04em;
+    color:var(--muted);
+    display:flex;flex-wrap:wrap;gap:.5rem 1.15rem;
+  }
+  .strap span{white-space:nowrap}
+  .strap i{font-style:normal;color:var(--faint)}
+
+  /* ---- rows: hanging label + content ---- */
+  section{
+    display:grid;
+    grid-template-columns:7.5rem 1fr;
+    gap:0 1.75rem;
+    border-top:1px solid var(--rule);
+    padding:1.6rem 0 1.9rem;
+  }
+  .label{
+    font-family:var(--mono);
+    font-size:.72rem;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    color:var(--faint);
+    padding-top:.28rem;
+  }
+  .body{min-width:0}
+
+  .lede{font-family:var(--serif);font-size:clamp(1.12rem,2.6vw,1.36rem);line-height:1.5;margin:0 0 .7rem;max-width:34em}
+  .lede:last-child{margin-bottom:0}
+  .lede em{font-style:italic;color:var(--muted)}
+
+  /* ---- work ---- */
+  .job{margin:0 0 1.9rem}
+  .job:last-child{margin-bottom:.2rem}
+  .job .top{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  .job h3{font-size:1rem;font-weight:600;letter-spacing:-.008em;margin:0}
+  .job .where{font-size:.93rem;color:var(--muted)}
+  .when{font-family:var(--mono);font-size:.73rem;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
+  .job ul{margin:.55rem 0 0;padding:0;list-style:none;max-width:40em}
+  .job li{position:relative;padding-left:1.05rem;margin-bottom:.3rem;font-size:.94rem;color:var(--ink)}
+  .job li::before{content:"—";position:absolute;left:0;color:var(--faint)}
+
+  /* ---- projects ---- */
+  .proj{
+    display:grid;grid-template-columns:1fr auto;gap:.15rem 1rem;align-items:baseline;
+    padding:.85rem 0;border-bottom:1px dotted var(--rule);text-decoration:none;color:inherit;
+  }
+  .proj:last-of-type{border-bottom:0}
+  .proj .name{font-weight:600;font-size:.98rem;letter-spacing:-.005em;transition:color .16s}
+  .proj .desc{grid-column:1 / -1;color:var(--muted);font-size:.9rem;max-width:42em}
+  .proj .arrow{font-family:var(--mono);color:var(--faint);font-size:.85rem;transition:transform .16s,color .16s}
+  .proj:hover .name{color:var(--accent)}
+  .proj:hover .arrow{transform:translate(3px,-3px);color:var(--accent)}
+
+  /* ---- toolbox ---- */
+  .kit{margin:0;font-size:.95rem;line-height:1.9;max-width:44em}
+  .kit b{font-weight:600}
+  .kit .sep{color:var(--faint);padding:0 .28rem}
+
+  /* ---- links ---- */
+  .links{display:flex;flex-wrap:wrap;gap:.4rem 1.6rem;margin:0}
+  .links a{
+    color:inherit;text-decoration:none;font-size:.95rem;
+    border-bottom:1px solid var(--rule);padding-bottom:1px;transition:border-color .16s,color .16s;
+  }
+  .links a:hover{color:var(--accent);border-color:var(--accent)}
+  .links a .ext{font-family:var(--mono);font-size:.7rem;color:var(--faint);margin-left:.28rem}
+
+  footer{
+    border-top:1px solid var(--rule);margin-top:2.6rem;padding-top:1.4rem;
+    display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+    font-family:var(--mono);font-size:.71rem;color:var(--faint);letter-spacing:.03em;
+  }
+
+  @media (max-width:640px){
+    section{grid-template-columns:1fr;gap:.55rem}
+    .label{padding-top:0}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Mithun<br>Dhanasuthan</h1>
+    <div class="strap">
+      <span>computer systems engineering <i>·</i> carleton university</span>
+      <span>ottawa, on</span>
+      <span><a href="mailto:dmithun2022@gmail.com" style="color:inherit;text-decoration:none;border-bottom:1px solid var(--rule)">dmithun2022@gmail.com</a></span>
+    </div>
+  </header>
+
+  <section>
+    <div class="label">about</div>
+    <div class="body">
+      <p class="lede">I pull things apart to see how they work, then put them back together a little better. Usually that ends up as a small tool that fixes something that was bugging me.</p>
+      <p class="lede"><em>Carleton&rsquo;s due dates are unreadable, so I wrote a tracker. I wanted to know which players actually play like me, so I built one that says so.</em></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">work</div>
+    <div class="body">
+
+      <div class="job">
+        <div class="top">
+          <div>
+            <h3>Software Engineering Intern</h3>
+            <div class="where">CodeWilling · remote</div>
+          </div>
+          <div class="when">jun &ndash; aug 2026</div>
+        </div>
+        <ul>
+          <li>Traced data-pipeline failures in a financial sync from on-prem servers to AWS &mdash; 1,000+ files a cycle, audited through Parquet outputs, Delta transaction logs, and Athena / Databricks row counts.</li>
+          <li>Fixed server node-limit errors by chasing stale <code>ServerRequest</code> records through MongoDB so failed spawns terminate instead of hanging.</li>
+          <li>Built unattended runs for 50+ Selenium tests across six product areas, with Claude reading the failure logs and drafting the email report.</li>
+        </ul>
+      </div>
+
+      <div class="job">
+        <div class="top">
+          <div>
+            <h3>Software Engineer Intern <span class="where">&mdash; mobile</span></h3>
+            <div class="where">Velavu (Brash Inc.) · ottawa, on</div>
+          </div>
+          <div class="when">jul &ndash; aug 2025</div>
+        </div>
+        <ul>
+          <li>Made the Gateway dashboard actually load: swapped positional layout for transform properties to cut layout reflows on render.</li>
+          <li>Wired live device telemetry over REST into the dashboard &mdash; hardware status, battery levels, firmware versions, audio alerts.</li>
+          <li>Turned Figma into production React Native screens for network, floor-map, and site-connectivity views.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="label">things i made</div>
+    <div class="body">
+
+      <a class="proj" href="#">
+        <span class="name">Raven Scheduling</span>
+        <span class="arrow">&#8599;</span>
+        <span class="desc">Deadline tracker for Brightspace. Scrapes the REST endpoints, normalizes the schedule, diffs it against the last pull, and pushes the change to the client. Multi-stage Docker build, so no Node runtime to babysit.</span>
+      </a>
+
+      <a class="proj" href="#">
+        <span class="name">Basketball Position Analytics</span>
+        <span class="arrow">&#8599;</span>
+        <span class="desc">Flask + SQLAlchemy app that turns NBA stat dumps into per-36 numbers, true-shooting, and position averages. Submit your own attributes and it scores the closest professional match, then hands you a training roadmap.</span>
+      </a>
+
+      <a class="proj" href="#">
+        <span class="name">ZeeZ (Sleep Watch)</span>
+        <span class="arrow">&#8599;</span>
+        <span class="desc">Hack the Hill II. Arduino Nano 33 BLE + MAX30102 reading pulse in real time, funnelled through Express and MongoDB into a React dashboard that graphs the night and suggests recovery.</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="label">toolbox</div>
+    <div class="body">
+      <p class="kit">
+        <b>python</b> <span class="sep">·</span> javascript <span class="sep">·</span> html/css <span class="sep">·</span> <b>react</b> (native too) <span class="sep">·</span> fastapi <span class="sep">·</span> flask <span class="sep">·</span> selenium <span class="sep">·</span> pandas <span class="sep">·</span> numpy <span class="sep">·</span> docker <span class="sep">·</span> aws (athena, ec2) <span class="sep">·</span> mongodb <span class="sep">·</span> sqlite <span class="sep">·</span> linux <span class="sep">·</span> figma <span class="sep">·</span> arduino
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="label">elsewhere</div>
+    <div class="body">
+      <p class="links">
+        <a href="https://github.com/mithustar39">github<span class="ext">&#8599;</span></a>
+        <a href="https://www.linkedin.com/in/mithun-dhanasuthan">linkedin<span class="ext">&#8599;</span></a>
+        <a href="mailto:dmithun2022@gmail.com">email</a>
+        <a href="https://mithustar39.github.io/resume.pdf">r&eacute;sum&eacute;.pdf<span class="ext">&#8595;</span></a>
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <span>one html file. no framework, no analytics, no tracking.</span>
+    <span>last touched 2026.10</span>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mithun@ottawa:~$</title>
+<meta name="description" content="Mithun Dhanasuthan — computer systems engineering, Carleton University.">
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#0b0e0c; --bar:#0f1311; --ink:#ccd6ce; --dim:#68736b;
+    --acc:#8ad6a2; --warn:#e0b26a; --bad:#e07d6d; --rule:#1c2520;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  body.light{
+    --bg:#f7f4ec; --bar:#efeade; --ink:#222924; --dim:#8b8674;
+    --acc:#1c6b3c; --warn:#96601a; --bad:#a63a2c; --rule:#ddd7c6;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--mono); font-size:13.5px; line-height:1.6;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  body.light{color-scheme:light}
+
+  /* window bar */
+  .bar{
+    flex:0 0 auto; display:flex; align-items:center; gap:.85rem;
+    padding:.6rem .9rem; background:var(--bar);
+    border-bottom:1px solid var(--rule); user-select:none;
+  }
+  .dots{display:flex;gap:.4rem}
+  .dots i{width:.62rem;height:.62rem;border-radius:50%;background:var(--rule);display:block}
+  .dots i:first-child{background:var(--bad);opacity:.75}
+  .dots i:nth-child(2){background:var(--warn);opacity:.7}
+  .dots i:last-child{background:var(--acc);opacity:.7}
+  .bar .title{color:var(--dim);font-size:.76rem;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar .grow{flex:1}
+  .bar button{
+    font:inherit;font-size:.72rem;letter-spacing:.05em;
+    background:none;color:var(--dim);border:1px solid var(--rule);
+    border-radius:3px;padding:.2rem .5rem;cursor:pointer;
+  }
+  .bar button:hover{color:var(--acc);border-color:var(--acc)}
+
+  /* output */
+  #out{flex:1;min-height:0;overflow-y:auto;padding:1.1rem 1.1rem 0.4rem;scrollbar-width:thin}
+  #out::-webkit-scrollbar{width:10px}
+  #out::-webkit-scrollbar-thumb{background:var(--rule);border-radius:6px}
+  .l{white-space:pre-wrap;word-break:break-word}
+  .l.gap{height:.85rem}
+  .ps1{color:var(--acc)}
+  .ps1 b{font-weight:400;color:var(--dim)}
+  .out{color:var(--ink)}
+  .k{color:var(--acc)}
+  .d{color:var(--dim)}
+  .w{color:var(--warn)}
+  .e{color:var(--bad)}
+  .u{color:var(--acc);text-decoration:underline;text-underline-offset:2px}
+  .hdr{color:var(--warn);font-weight:400}
+  .cmdline .c{color:var(--ink)}
+
+  /* prompt */
+  #line{
+    flex:0 0 auto; display:flex; align-items:center; gap:.6rem;
+    padding:.55rem 1.1rem 1rem; border-top:1px solid var(--rule); background:var(--bg);
+  }
+  #line .ps1{padding:0}
+  #cmd{
+    flex:1;min-width:0;background:none;border:0;outline:0;
+    font:inherit;color:var(--ink);caret-color:var(--acc);
+  }
+  #cmd::placeholder{color:var(--dim);opacity:.6}
+  .blink{display:inline-block;width:.6em;height:1.05em;background:var(--acc);vertical-align:-2px;animation:b 1.05s steps(1) infinite}
+  @keyframes b{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+  @media (prefers-reduced-motion:reduce){.blink{animation:none}}
+</style>
+</head>
+<body>
+  <div class="bar">
+    <span class="dots"><i></i><i></i><i></i></span>
+    <span class="title">mithun@ottawa &mdash; zsh &mdash; 96&times;30</span>
+    <span class="grow"></span>
+    <button id="theme" type="button">theme</button>
+  </div>
+
+  <main id="out" aria-live="polite"></main>
+
+  <form id="line" autocomplete="off">
+    <span class="ps1">mithun<b>@</b>ottawa <b>~</b> $</span>
+    <input id="cmd" placeholder="type `help`" aria-label="command input" spellcheck="false">
+  </form>
+
+<script>
+(function(){
+  var out = document.getElementById('out');
+  var input = document.getElementById('cmd');
+  var form = document.getElementById('line');
+
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function emit(html, cls){
+    var d = document.createElement('div');
+    d.className = 'l' + (cls ? ' ' + cls : '');
+    d.innerHTML = html;
+    out.appendChild(d);
+    out.scrollTop = out.scrollHeight;
+    return d;
+  }
+  function gap(){ emit('', 'gap'); }
+  function prompt(cmd){
+    emit('<span class="ps1">mithun<b>@</b>ottawa <b>~</b> $</span> <span class="cmdline"><span class="c">' + esc(cmd) + '</span></span>');
+  }
+  function text(str, cls){ emit('<span class="' + (cls||'out') + '">' + esc(str) + '</span>'); }
+  function link(label, href, cls){ emit('<span class="' + (cls||'d') + '">' + esc(label) + '</span> <a class="u" href="' + href + '" target="_blank" rel="noopener">' + esc(href) + '</a>'); }
+
+  /* ---------- content ---------- */
+  var projects = {
+    'raven-scheduling': {
+      blurb: 'deadline tracker for carleton brightspace.\nscrapes the REST endpoints, normalizes the schedule, diffs it\nagainst the last pull, pushes the change to the client.\nmulti-stage docker build \u2014 no node runtime to babysit.',
+      stack: 'python \u00b7 fastapi \u00b7 react \u00b7 docker',
+      href: '#'
+    },
+    'basketball-analytics': {
+      blurb: 'turns NBA stat dumps into per-36 numbers, true-shooting,\nand position averages. submit your own attributes, get the\nclosest professional match and a training roadmap.',
+      stack: 'python \u00b7 flask \u00b7 sqlalchemy \u00b7 pandas \u00b7 numpy \u00b7 chart.js',
+      href: '#'
+    },
+    'zeez-sleep-watch': {
+      blurb: 'hack the hill II. arduino nano 33 BLE + MAX30102 reading\npulse in real time, through express + mongodb into a react\ndashboard that graphs the night and suggests recovery.',
+      stack: 'arduino \u00b7 node \u00b7 express \u00b7 mongodb \u00b7 react \u00b7 groq',
+      href: '#'
+    }
+  };
+
+  var files = {
+    'now.txt': 'software engineering intern @ codewilling          jun\u2013aug 2026\n  prev: mobile intern @ velavu, ottawa                jul\u2013aug 2025\n  studying: computer systems engineering @ carleton\n  side quest: making hardware behave',
+    'about.txt': 'i pull things apart to see how they work, then put them back\ntogether a little better. usually that ends up as a small tool\nthat fixes something that was bugging me.\n\ncarleton\'s due dates are unreadable, so i wrote a tracker.\ni wanted to know which players actually play like me, so i\nbuilt one that says so.',
+    'skills.txt': 'languages   python, javascript, html/css, sql\nframeworks  fastapi, flask, react, react native, selenium\n            pandas, numpy\ntools       git, docker, aws (athena, ec2), mongodb, sqlite\n            linux, figma, arduino',
+    'contact.txt': 'email     dmithun2022@gmail.com\ngithub    https://github.com/mithustar39\nlinkedin  https://www.linkedin.com/in/mithun-dhanasuthan\nresume    resume.pdf'
+  };
+
+  function lsOut(){
+    Object.keys(projects).forEach(function(k){
+      emit('<span class="k">' + k + '/</span>');
+    });
+    emit('<span class="d">' + Object.keys(files).join('   ') + '</span>');
+  }
+
+  function helpOut(){
+    emit('<span class="hdr">available commands</span>');
+    var rows = [
+      ['whoami', 'who is this'],
+      ['cat &lt;file&gt;', 'now.txt, about.txt, skills.txt, contact.txt'],
+      ['ls', 'everything in ~'],
+      ['open &lt;project&gt;', 'raven-scheduling, basketball-analytics, zeez-sleep-watch'],
+      ['work', 'where the time went'],
+      ['contact', 'how to reach me'],
+      ['resume', 'grab the pdf'],
+      ['theme', 'flip light / dark'],
+      ['clear', 'wipe the screen'],
+      ['help', 'this']
+    ];
+    rows.forEach(function(r){
+      emit('<span class="k">' + r[0] + '</span><span class="d">' + Array(Math.max(1, 22 - r[0].replace(/&lt;|&gt;/g,'').length)).join(' ') + '</span><span class="out">' + r[1] + '</span>');
+    });
+    emit('<span class="d">tip: \u2191/\u2193 for history, ctrl+L to clear</span>');
+  }
+
+  var commands = {
+    help: helpOut,
+    whoami: function(){
+      emit('<span class="out">mithun dhanasuthan</span>');
+      emit('<span class="d">computer systems engineering \u2014 carleton university, ottawa, on</span>');
+    },
+    ls: lsOut,
+    work: function(){
+      emit('<span class="k">software engineering intern</span>  <span class="d">codewilling \u00b7 remote</span>  <span class="w">jun\u2013aug 2026</span>');
+      text('  traced data-pipeline failures in a financial sync from on-prem to AWS \u2014');
+      text('  1,000+ files a cycle, audited through parquet, delta logs, athena row counts.');
+      text('  fixed node-limit errors by chasing stale ServerRequest records through mongodb.');
+      text('  ran 50+ selenium tests unattended across six product areas.');
+      gap();
+      emit('<span class="k">software engineer intern, mobile</span>  <span class="d">velavu (brash inc.) \u00b7 ottawa</span>  <span class="w">jul\u2013aug 2025</span>');
+      text('  cut dashboard layout reflows by swapping positional layout for transforms.');
+      text('  wired live device telemetry over REST into react native views.');
+    },
+    contact: function(){
+      link('email    ', 'mailto:dmithun2022@gmail.com');
+      link('github   ', 'https://github.com/mithustar39');
+      link('linkedin ', 'https://www.linkedin.com/in/mithun-dhanasuthan');
+    },
+    resume: function(){
+      emit('<span class="d">opening</span> <a class="u" href="https://mithustar39.github.io/resume.pdf" target="_blank" rel="noopener">resume.pdf</a>');
+    },
+    date: function(){ emit('<span class="d">' + new Date().toDateString().toLowerCase() + '</span>'); },
+    echo: function(args){ text(args.join(' ')); },
+    theme: function(){ toggleTheme(); emit('<span class="d">theme \u2192 ' + (document.body.classList.contains('light') ? 'light' : 'dark') + '</span>'); },
+    sudo: function(){
+      emit('<span class="e">mithun is not in the sudoers file. this incident will be reported.</span>');
+      emit('<span class="d">\u2026to nobody. there is no server. this is an html file.</span>');
+    },
+    rm: function(){
+      emit('<span class="w">rm: nice try.</span>');
+    },
+    clear: function(){ out.innerHTML = ''; }
+  };
+
+  function run(raw){
+    var cmd = raw.trim();
+    if (!cmd) return;
+    prompt(cmd);
+    var parts = cmd.split(/\s+/);
+    var name = parts[0].toLowerCase();
+    var args = parts.slice(1);
+
+    if (name === 'cat'){
+      var f = (args[0] || '').toLowerCase();
+      if (!f){ emit('<span class="d">usage: cat &lt;file&gt;</span>'); lsOut(); return; }
+      if (files[f]) text(files[f]);
+      else emit('<span class="e">cat: ' + esc(f) + ': no such file</span>');
+      return;
+    }
+
+    if (name === 'open'){
+      var p = (args[0] || '').toLowerCase().replace(/\/$/,'');
+      var proj = projects[p];
+      if (!proj){ emit('<span class="e">open: ' + esc(p || '') + ': not found</span>'); lsOut(); return; }
+      emit('<span class="k">' + p + '/</span>');
+      text(proj.blurb);
+      emit('<span class="d">' + proj.stack + '</span>');
+      if (proj.href && proj.href !== '#') link('', proj.href);
+      else emit('<span class="d">(link goes here once deployed)</span>');
+      return;
+    }
+
+    var fn = commands[name];
+    if (fn) fn(args);
+    else {
+      emit('<span class="e">zsh: command not found: ' + esc(name) + '</span>');
+      emit('<span class="d">try `help`</span>');
+    }
+  }
+
+  /* ---------- theme ---------- */
+  function toggleTheme(){
+    document.body.classList.toggle('light');
+    try { localStorage.setItem('mth-theme', document.body.classList.contains('light') ? 'light' : 'dark'); } catch(e){}
+  }
+  try { if (localStorage.getItem('mth-theme') === 'light') document.body.classList.add('light'); } catch(e){}
+  document.getElementById('theme').addEventListener('click', function(){ toggleTheme(); input.focus(); });
+
+  /* ---------- boot ---------- */
+  emit('<span class="d">last login: ' + new Date(Date.now()-864e5).toDateString().toLowerCase() + ' on ttys001</span>');
+  gap();
+  prompt('whoami');
+  emit('<span class="out">mithun dhanasuthan</span>');
+  emit('<span class="d">computer systems engineering \u2014 carleton university, ottawa, on</span>');
+  gap();
+  prompt('cat now.txt');
+  text(files['now.txt']);
+  gap();
+  prompt('ls');
+  lsOut();
+  gap();
+  prompt('cat contact.txt');
+  text(files['contact.txt']);
+  gap();
+  emit('<span class="d">type `help` for commands. `open raven-scheduling` is a decent start.</span>');
+  gap();
+
+  /* ---------- input ---------- */
+  var hist = [], hi = -1;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var v = input.value;
+    if (v.trim()){ hist.push(v); }
+    hi = hist.length;
+    input.value = '';
+    run(v);
+    gap();
+  });
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowUp'){
+      if (hist.length && hi > 0){ hi--; input.value = hist[hi]; e.preventDefault(); }
+    } else if (e.key === 'ArrowDown'){
+      if (hi < hist.length - 1){ hi++; input.value = hist[hi]; }
+      else { hi = hist.length; input.value = ''; }
+      e.preventDefault();
+    } else if (e.key === 'l' && e.ctrlKey){
+      e.preventDefault(); out.innerHTML = '';
+    } else if (e.key === 'Tab'){
+      e.preventDefault();
+      var pool = Object.keys(commands).concat(Object.keys(projects)).concat(Object.keys(files));
+      var m = pool.filter(function(x){ return x.indexOf(input.value.toLowerCase()) === 0; });
+      if (m.length === 1) input.value = m[0];
+      else if (m.length > 1) emit('<span class="d">' + m.join('   ') + '</span>');
+    }
+  });
+  document.addEventListener('click', function(e){
+    if (!window.getSelection().toString()) input.focus();
+  });
+  input.focus();
+})();
+</script>
+</body>
+</html>
