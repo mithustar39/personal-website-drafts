@@ -8,8 +8,8 @@ Nothing here is final — this is a scratchpad.
 
 | File | Direction | For |
 |---|---|---|
-| [`drafts/quiet.html`](./drafts/quiet.html) | Editorial, type-led, warm paper | Recruiters / anyone skimming |
-| [`drafts/terminal.html`](./drafts/terminal.html) | Interactive shell (real commands) | Engineers |
+| [`drafts/quiet.html`](./drafts/quiet.html) | Editorial, type-led, warm paper | Plain |
+| [`drafts/terminal.html`](./drafts/terminal.html) | Interactive shell (real commands) | Terminal vibe |
 
 Both are single self-contained HTML files. No build step, no dependencies, no
 external requests — open them directly in a browser.
