@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mithun Dhanasuthan</title>
+<meta name="description" content="Mithun Dhanasuthan — computer systems engineering, Carleton University.">
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    color-scheme: light dark;
+    --paper:#faf8f4;
+    --ink:#15151a;
+    --muted:#6e6b63;
+    --faint:#a8a49a;
+    --rule:#e2ddd3;
+    --accent:#9c361f;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --paper:#121210; --ink:#ecece7; --muted:#9d9a91; --faint:#6c6a62; --rule:#302e29; --accent:#e2805f; }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:56rem;margin:0 auto;padding:clamp(2rem,6vw,5rem) clamp(1.25rem,4vw,2.5rem) 5rem}
+
+  /* ---- masthead ---- */
+  header{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:1.25rem 2rem; flex-wrap:wrap;
+    margin-bottom:clamp(2.6rem,6vw,5rem);
+  }
+  h1{
+    font-family:var(--serif); font-weight:400;
+    font-size:clamp(2.1rem,7.5vw,3.6rem);
+    line-height:1.02; letter-spacing:-0.022em; margin:0 0 1rem;
+  }
+  .strap{font-family:var(--mono);font-size:.78rem;letter-spacing:.04em;color:var(--muted);display:flex;flex-direction:column;gap:.2rem}
+  .strap i{font-style:normal;color:var(--faint);padding:0 .35rem}
+  .strap a{color:inherit;text-decoration:none;border-bottom:1px solid var(--rule)}
+  .strap a:hover{color:var(--accent);border-color:var(--accent)}
+
+  /* ---- path switch ---- */
+  .path{
+    display:flex; align-items:center; gap:.15rem;
+    font-family:var(--mono); font-size:.68rem; letter-spacing:.07em;
+    color:var(--faint); border:1px solid var(--rule); border-radius:999px;
+    padding:.28rem .35rem .28rem .7rem; white-space:nowrap;
+  }
+  .path .cap{margin-right:.3rem}
+  .path a{color:var(--dim);text-decoration:none;padding:.13rem .5rem;border-radius:999px;transition:color .15s,background .15s}
+  .path a:not(.on):hover{color:var(--accent)}
+  .path a.on{color:var(--ink);background:var(--rule)}
+
+  /* ---- rows ---- */
+  section{
+    display:grid; grid-template-columns:7.5rem 1fr; gap:0 1.75rem;
+    border-top:1px solid var(--rule); padding:1.6rem 0 1.9rem;
+  }
+  .label{
+    font-family:var(--mono); font-size:.72rem; letter-spacing:.11em;
+    text-transform:uppercase; color:var(--faint); padding-top:.28rem;
+  }
+  .body{min-width:0}
+
+  .now{
+    font-family:var(--mono); font-size:.74rem; color:var(--muted);
+    display:flex; gap:.45rem; margin:-.2rem 0 1.1rem; letter-spacing:.02em;
+  }
+  .now::before{content:"";width:.42rem;height:.42rem;border-radius:50%;background:var(--accent);margin-top:.42rem;flex:0 0 auto}
+
+  .lede{font-family:var(--serif);font-size:clamp(1.1rem,2.6vw,1.32rem);line-height:1.5;margin:0 0 .7rem;max-width:34em}
+  .lede:last-child{margin-bottom:0}
+
+  .job{margin:0 0 1.9rem}
+  .job:last-child{margin-bottom:.2rem}
+  .top{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  .job h3{font-size:1rem;font-weight:600;letter-spacing:-.008em;margin:0}
+  .where{font-size:.93rem;color:var(--muted)}
+  .when{font-family:var(--mono);font-size:.73rem;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
+  ul.pts{margin:.55rem 0 0;padding:0;list-style:none;max-width:42em}
+  ul.pts li{position:relative;padding-left:1.05rem;margin-bottom:.32rem;font-size:.93rem}
+  ul.pts li::before{content:"\2014";position:absolute;left:0;color:var(--faint)}
+
+  .proj{display:block;padding:.95rem 0;border-bottom:1px dotted var(--rule);text-decoration:none;color:inherit}
+  .proj:last-child{border-bottom:0;padding-bottom:.2rem}
+  .proj .head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem}
+  .proj .name{font-weight:600;font-size:.98rem;letter-spacing:-.005em;transition:color .16s}
+  .proj .arrow{font-family:var(--mono);color:var(--faint);font-size:.85rem;transition:transform .16s,color .16s}
+  .proj:hover .name{color:var(--accent)}
+  .proj:hover .arrow{transform:translate(3px,-3px);color:var(--accent)}
+  .proj .stack{font-family:var(--mono);font-size:.7rem;color:var(--faint);letter-spacing:.03em;margin-top:.18rem}
+  .proj p{margin:.4rem 0 0;color:var(--muted);font-size:.9rem;max-width:42em}
+  .proj .extra{color:var(--faint);font-size:.86rem}
+
+  .skillrow{display:grid;grid-template-columns:6rem 1fr;gap:.4rem 1rem;font-size:.92rem;margin-bottom:.5rem}
+  .skillrow:last-child{margin-bottom:0}
+  .skillrow .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.07em;color:var(--faint);padding-top:.16rem}
+  .skillrow .v{color:var(--ink)}
+  .skillrow .v span{color:var(--faint);padding:0 .3rem}
+
+  .links{display:flex;flex-wrap:wrap;gap:.4rem 1.6rem;margin:0}
+  .links a{color:inherit;text-decoration:none;font-size:.95rem;border-bottom:1px solid var(--rule);padding-bottom:1px;transition:border-color .16s,color .16s}
+  .links a:hover{color:var(--accent);border-color:var(--accent)}
+  .links a .ext{font-family:var(--mono);font-size:.7rem;color:var(--faint);margin-left:.28rem}
+
+  footer{
+    border-top:1px solid var(--rule); margin-top:2.6rem; padding-top:1.4rem;
+    display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    font-family:var(--mono); font-size:.71rem; color:var(--faint); letter-spacing:.03em;
+  }
+  footer a{color:inherit;text-decoration:none;border-bottom:1px solid var(--rule)}
+  footer a:hover{color:var(--accent);border-color:var(--accent)}
+
+  @media (max-width:640px){
+    section{grid-template-columns:1fr;gap:.55rem}
+    .label{padding-top:0}
+    .skillrow{grid-template-columns:1fr;gap:.1rem}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1 id="name"></h1>
+      <div class="strap">
+        <span id="strap1"></span>
+        <span id="strap2"></span>
+        <span id="strap3"></span>
+      </div>
+    </div>
+    <nav class="path" aria-label="Switch view">
+      <span class="cap">view</span>
+      <a href="index.html" class="on" aria-current="page">plain</a>
+      <a href="terminal.html" data-path="terminal">terminal</a>
+    </nav>
+  </header>
+
+  <section><div class="label">about</div><div class="body" id="about"></div></section>
+  <section><div class="label">work</div><div class="body" id="work"></div></section>
+  <section><div class="label">things i made</div><div class="body" id="projects"></div></section>
+  <section><div class="label">toolbox</div><div class="body" id="skills"></div></section>
+  <section><div class="label">elsewhere</div><div class="body" id="links"></div></section>
+
+  <footer>
+    <span>one html file, one js file. no framework, no analytics, no tracking.</span>
+    <span>last touched <span id="updated"></span></span>
+  </footer>
+
+  <noscript>
+    <p style="font-family:monospace;font-size:.85rem">
+      Mithun Dhanasuthan &mdash;
+      <a href="mailto:dmithun2022@gmail.com">email</a> &middot;
+      <a href="https://github.com/mithustar39">github</a> &middot;
+      <a href="https://www.linkedin.com/in/mithun-dhanasuthan">linkedin</a> &middot;
+      <a href="https://mithustar39.github.io/resume.pdf">resume.pdf</a>
+    </p>
+  </noscript>
+
+</div>
+
+<script src="content.js"></script>
+<script>
+(function(){
+  var S = window.SITE;
+  if (!S) return;
+
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* --- remembered path: engineers land back in the terminal --- */
+  try {
+    if (localStorage.getItem("mth-path") === "terminal") {
+      location.replace("terminal.html");
+      return;
+    }
+  } catch(e){}
+  document.querySelectorAll('[data-path]').forEach(function(a){
+    a.addEventListener("click", function(){
+      try { localStorage.setItem("mth-path", a.getAttribute("data-path")); } catch(e){}
+    });
+  });
+
+  /* --- masthead --- */
+  $("name").textContent = S.name;
+  $("strap1").innerHTML = esc(S.role) + '<i>\u00b7</i>' + esc(S.school);
+  $("strap2").textContent = S.location;
+  $("strap3").innerHTML = '<a href="mailto:' + S.email + '">' + esc(S.email) + '</a>';
+  $("updated").textContent = S.updated;
+
+  /* --- about --- */
+  var aboutHtml = "";
+  if (S.now) aboutHtml += '<div class="now">' + esc(S.now) + '</div>';
+  S.about.forEach(function(p){ aboutHtml += '<p class="lede">' + esc(p) + '</p>'; });
+  $("about").innerHTML = aboutHtml;
+
+  /* --- work --- */
+  $("work").innerHTML = S.work.map(function(j){
+    var pts = j.points.map(function(p){ return '<li>' + esc(p) + '</li>'; }).join("");
+    return '<div class="job">' +
+      '<div class="top"><div>' +
+        '<h3>' + esc(j.role) + '</h3>' +
+        '<div class="where">' + esc(j.org) + ' \u00b7 ' + esc(j.where) + '</div>' +
+      '</div><div class="when">' + esc(j.when) + '</div></div>' +
+      '<ul class="pts">' + pts + '</ul></div>';
+  }).join("");
+
+  /* --- projects --- */
+  $("projects").innerHTML = S.projects.map(function(p){
+    return '<a class="proj" href="' + p.href + '" target="_blank" rel="noopener">' +
+      '<div class="head"><span class="name">' + esc(p.name) + '</span><span class="arrow">\u2197</span></div>' +
+      '<div class="stack">' + esc(p.stack) + '</div>' +
+      '<p>' + esc(p.blurb) + (p.extra ? ' <span class="extra">' + esc(p.extra) + '</span>' : '') + '</p>' +
+      '</a>';
+  }).join("");
+
+  /* --- skills --- */
+  $("skills").innerHTML = S.skills.map(function(g){
+    return '<div class="skillrow"><div class="k">' + esc(g.k) + '</div><div class="v">' +
+      g.v.map(esc).join('<span>\u00b7</span>') + '</div></div>';
+  }).join("");
+
+  /* --- links --- */
+  var L = [
+    ['github', S.github, '\u2197'],
+    ['linkedin', S.linkedin, '\u2197'],
+    ['email', 'mailto:' + S.email, ''],
+    ['r\u00e9sum\u00e9.pdf', S.resume, '\u2193']
+  ];
+  $("links").innerHTML = '<p class="links">' + L.map(function(l){
+    return '<a href="' + l[1] + '">' + esc(l[0]) + (l[2] ? '<span class="ext">' + l[2] + '</span>' : '') + '</a>';
+  }).join("") + '</p>';
+})();
+</script>
+</body>
+</html>

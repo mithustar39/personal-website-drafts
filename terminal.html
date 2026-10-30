@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mithun@ottawa:~$</title>
+<meta name="description" content="Mithun Dhanasuthan — computer systems engineering, Carleton University.">
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#0b0e0c; --bar:#0f1311; --ink:#ccd6ce; --dim:#68736b;
+    --acc:#8ad6a2; --warn:#e0b26a; --bad:#e07d6d; --rule:#1c2520;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  body.light{
+    --bg:#f7f4ec; --bar:#efeade; --ink:#222924; --dim:#8b8674;
+    --acc:#1c6b3c; --warn:#96601a; --bad:#a63a2c; --rule:#ddd7c6;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--mono); font-size:13.5px; line-height:1.6;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .bar{
+    flex:0 0 auto; display:flex; align-items:center; gap:.85rem;
+    padding:.6rem .9rem; background:var(--bar);
+    border-bottom:1px solid var(--rule); user-select:none;
+  }
+  .dots{display:flex;gap:.4rem}
+  .dots i{width:.62rem;height:.62rem;border-radius:50%;background:var(--rule);display:block}
+  .dots i:first-child{background:var(--bad);opacity:.75}
+  .dots i:nth-child(2){background:var(--warn);opacity:.7}
+  .dots i:last-child{background:var(--acc);opacity:.7}
+  .bar .title{color:var(--dim);font-size:.76rem;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar .grow{flex:1}
+  .bar button, .bar .btn{
+    font:inherit;font-size:.72rem;letter-spacing:.05em;text-decoration:none;
+    background:none;color:var(--dim);border:1px solid var(--rule);
+    border-radius:3px;padding:.2rem .5rem;cursor:pointer;
+  }
+  .bar button:hover, .bar .btn:hover{color:var(--acc);border-color:var(--acc)}
+
+  #out{flex:1;min-height:0;overflow-y:auto;padding:1.1rem 1.1rem .4rem;scrollbar-width:thin}
+  #out::-webkit-scrollbar{width:10px}
+  #out::-webkit-scrollbar-thumb{background:var(--rule);border-radius:6px}
+  .l{white-space:pre-wrap;word-break:break-word}
+  .l.gap{height:.85rem}
+  .ps1{color:var(--acc)}
+  .ps1 b{font-weight:400;color:var(--dim)}
+  .out{color:var(--ink)}
+  .k{color:var(--acc)}
+  .d{color:var(--dim)}
+  .w{color:var(--warn)}
+  .e{color:var(--bad)}
+  .u{color:var(--acc);text-decoration:underline;text-underline-offset:2px}
+  .hdr{color:var(--warn);font-weight:400}
+
+  #line{
+    flex:0 0 auto; display:flex; align-items:center; gap:.6rem;
+    padding:.55rem 1.1rem 1rem; border-top:1px solid var(--rule); background:var(--bg);
+  }
+  #cmd{flex:1;min-width:0;background:none;border:0;outline:0;font:inherit;color:var(--ink);caret-color:var(--acc)}
+  #cmd::placeholder{color:var(--dim);opacity:.6}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="bar">
+    <span class="dots"><i></i><i></i><i></i></span>
+    <span class="title">mithun@ottawa &mdash; zsh &mdash; 96&times;30</span>
+    <span class="grow"></span>
+    <a class="btn" href="index.html" data-path="plain">plain view</a>
+    <button id="theme" type="button">theme</button>
+  </div>
+
+  <main id="out" aria-live="polite"></main>
+
+  <form id="line" autocomplete="off">
+    <span class="ps1">mithun<b>@</b>ottawa <b>~</b> $</span>
+    <input id="cmd" placeholder="type `help`" aria-label="command input" spellcheck="false">
+  </form>
+
+<script src="content.js"></script>
+<script>
+(function(){
+  var S = window.SITE || {};
+  var out = document.getElementById('out');
+  var input = document.getElementById('cmd');
+  var form = document.getElementById('line');
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function emit(html, cls){
+    var d = document.createElement('div');
+    d.className = 'l' + (cls ? ' ' + cls : '');
+    d.innerHTML = html;
+    out.appendChild(d); out.scrollTop = out.scrollHeight;
+    return d;
+  }
+  function gap(){ emit('', 'gap'); }
+  function prompt(cmd){
+    emit('<span class="ps1">mithun<b>@</b>ottawa <b>~</b> $</span> <span class="c">' + esc(cmd) + '</span>');
+  }
+  function text(str, cls){ emit('<span class="' + (cls||'out') + '">' + esc(str) + '</span>'); }
+  function link(label, href, cls){
+    emit('<span class="' + (cls||'d') + '">' + esc(label) + '</span> <a class="u" href="' + href + '" target="_blank" rel="noopener">' + esc(href) + '</a>');
+  }
+
+  /* ---------- derive from content.js ---------- */
+  var projects = {};
+  (S.projects || []).forEach(function(p){
+    projects[p.slug] = {
+      name: p.name, stack: p.stack, href: p.href,
+      blurb: p.blurb + (p.extra ? '\n' + p.extra : '')
+    };
+  });
+
+  var files = {};
+  files['now.txt'] = (S.now || '') +
+    ((S.education) ? '\nstudying: ' + S.education.degree.toLowerCase() + ' @ ' + S.education.school.toLowerCase() + ' (' + S.education.when + ')' : '');
+  files['about.txt'] = (S.about || []).join('\n\n');
+  files['skills.txt'] = (S.skills || []).map(function(g){
+    return pad(g.k, 11) + g.v.join(', ');
+  }).join('\n');
+  files['contact.txt'] =
+    'email     ' + (S.email || '') + '\n' +
+    'github    ' + (S.github || '') + '\n' +
+    'linkedin  ' + (S.linkedin || '') + '\n' +
+    'resume    ' + (S.resume || '');
+
+  function pad(s, n){ s = String(s); return s + new Array(Math.max(1, n - s.length + 1)).join(' '); }
+
+  function lsOut(){
+    Object.keys(projects).forEach(function(k){ emit('<span class="k">' + k + '/</span>'); });
+    emit('<span class="d">' + Object.keys(files).join('   ') + '</span>');
+  }
+
+  function helpOut(){
+    emit('<span class="hdr">available commands</span>');
+    [
+      ['whoami', 'who is this'],
+      ['cat &lt;file&gt;', 'now.txt, about.txt, skills.txt, contact.txt'],
+      ['ls', 'everything in ~'],
+      ['open &lt;project&gt;', Object.keys(projects).join(', ')],
+      ['work', 'where the time went'],
+      ['contact', 'how to reach me'],
+      ['resume', 'grab the pdf'],
+      ['quiet', 'read the plain version'],
+      ['theme', 'flip light / dark'],
+      ['clear', 'wipe the screen']
+    ].forEach(function(r){
+      var w = 22 - r[0].replace(/&lt;|&gt;/g,'').length;
+      emit('<span class="k">' + r[0] + '</span><span class="d">' + new Array(Math.max(1,w+1)).join(' ') + '</span>' + r[1]);
+    });
+    emit('<span class="d">tip: \u2191/\u2193 history, tab completes, ctrl+L clears</span>');
+  }
+
+  var commands = {
+    help: helpOut,
+    whoami: function(){
+      emit('<span class="out">' + esc(S.name) + '</span>');
+      emit('<span class="d">' + esc(S.role) + ' \u2014 ' + esc(S.school) + ', ' + esc(S.location) + '</span>');
+    },
+    ls: lsOut,
+    work: function(){
+      (S.work || []).forEach(function(j, i){
+        if (i) gap();
+        emit('<span class="k">' + esc(j.role.toLowerCase()) + '</span>  <span class="d">' + esc(j.org) + ' \u00b7 ' + esc(j.where) + '</span>  <span class="w">' + esc(j.when) + '</span>');
+        j.points.forEach(function(p){ text('  ' + p); });
+      });
+    },
+    contact: function(){
+      link('email    ', 'mailto:' + S.email);
+      link('github   ', S.github);
+      link('linkedin ', S.linkedin);
+    },
+    resume: function(){
+      emit('<span class="d">opening</span> <a class="u" href="' + S.resume + '" target="_blank" rel="noopener">resume.pdf</a>');
+    },
+    quiet: function(){ go('plain', 'index.html'); },
+    'recruiter': function(){ go('plain', 'index.html'); },
+    exit: function(){ go('plain', 'index.html'); },
+    date: function(){ emit('<span class="d">' + new Date().toDateString().toLowerCase() + '</span>'); },
+    echo: function(args){ text(args.join(' ')); },
+    theme: function(){
+      document.body.classList.toggle('light');
+      try { localStorage.setItem('mth-theme', document.body.classList.contains('light') ? 'light' : 'dark'); } catch(e){}
+      emit('<span class="d">theme \u2192 ' + (document.body.classList.contains('light') ? 'light' : 'dark') + '</span>');
+    },
+    sudo: function(){
+      emit('<span class="e">mithun is not in the sudoers file. this incident will be reported.</span>');
+      emit('<span class="d">\u2026to nobody. this is a static html file.</span>');
+    },
+    clear: function(){ out.innerHTML = ''; }
+  };
+
+  function go(path, href){
+    try { localStorage.setItem('mth-path', path); } catch(e){}
+    location.href = href;
+  }
+  document.querySelectorAll('[data-path]').forEach(function(a){
+    a.addEventListener('click', function(){
+      try { localStorage.setItem('mth-path', a.getAttribute('data-path')); } catch(e){}
+    });
+  });
+
+  function run(raw){
+    var cmd = raw.trim();
+    if (!cmd) return;
+    prompt(cmd);
+    var parts = cmd.split(/\s+/), name = parts[0].toLowerCase(), args = parts.slice(1);
+
+    if (name === 'cat'){
+      var f = (args[0] || '').toLowerCase();
+      if (!f){ emit('<span class="d">usage: cat &lt;file&gt;</span>'); lsOut(); return; }
+      if (files[f]) text(files[f]);
+      else emit('<span class="e">cat: ' + esc(f) + ': no such file</span>');
+      return;
+    }
+    if (name === 'open'){
+      var p = (args[0] || '').toLowerCase().replace(/\/$/,'');
+      var proj = projects[p];
+      if (!proj){ emit('<span class="e">open: ' + esc(p || '') + ': not found</span>'); lsOut(); return; }
+      emit('<span class="k">' + proj.name + '/</span>');
+      text(proj.blurb);
+      emit('<span class="d">' + esc(proj.stack) + '</span>');
+      if (proj.href && proj.href !== '#') link('', proj.href);
+      return;
+    }
+    var fn = commands[name];
+    if (fn) fn(args);
+    else {
+      emit('<span class="e">zsh: command not found: ' + esc(name) + '</span>');
+      emit('<span class="d">try `help`</span>');
+    }
+  }
+
+  /* ---------- theme ---------- */
+  try { if (localStorage.getItem('mth-theme') === 'light') document.body.classList.add('light'); } catch(e){}
+  document.getElementById('theme').addEventListener('click', function(){ input.focus(); commands.theme(); });
+
+  /* ---------- boot ---------- */
+  emit('<span class="d">last login: ' + new Date(Date.now()-864e5).toDateString().toLowerCase() + ' on ttys001</span>');
+  gap();
+  prompt('whoami');
+  emit('<span class="out">' + esc(S.name) + '</span>');
+  emit('<span class="d">' + esc(S.role) + ' \u2014 ' + esc(S.school) + ', ' + esc(S.location) + '</span>');
+  gap();
+  prompt('cat now.txt');
+  text(files['now.txt']);
+  gap();
+  prompt('ls');
+  lsOut();
+  gap();
+  emit('<span class="d">type `help` to poke around. `open raven-scheduling` is a decent start.</span>');
+  emit('<span class="d">or `quiet` if you would rather read the normal version.</span>');
+  gap();
+
+  /* ---------- input ---------- */
+  var hist = [], hi = -1;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var v = input.value;
+    if (v.trim()) hist.push(v);
+    hi = hist.length; input.value = '';
+    run(v); gap();
+  });
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowUp'){
+      if (hist.length && hi > 0){ hi--; input.value = hist[hi]; e.preventDefault(); }
+    } else if (e.key === 'ArrowDown'){
+      if (hi < hist.length - 1){ hi++; input.value = hist[hi]; }
+      else { hi = hist.length; input.value = ''; }
+      e.preventDefault();
+    } else if (e.key === 'l' && e.ctrlKey){
+      e.preventDefault(); out.innerHTML = '';
+    } else if (e.key === 'Tab'){
+      e.preventDefault();
+      var pool = Object.keys(commands).concat(Object.keys(projects)).concat(Object.keys(files));
+      var m = pool.filter(function(x){ return x.indexOf(input.value.toLowerCase()) === 0; });
+      if (m.length === 1) input.value = m[0];
+      else if (m.length > 1) emit('<span class="d">' + m.join('   ') + '</span>');
+    }
+  });
+  document.addEventListener('click', function(e){
+    if (!window.getSelection().toString()) input.focus();
+  });
+  input.focus();
+})();
+</script>
+</body>
+</html>
