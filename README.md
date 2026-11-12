@@ -53,8 +53,8 @@ Copy is pulled from `resume.pdf`, repo READMEs, and GitHub descriptions. Still t
 
 - [ ] Re-check every line word-for-word against the resume
 - [ ] Add earlier roles / experience from LinkedIn
-- [ ] Confirm the CPRT rover entry (it's a fork of `CPRT/rover`)
 - [ ] Real project links where they're deployed (Raven Scheduling, Iron Ledger)
+- [ ] Confirm the exact title of "Star Stellar Swordsmaster"
 - [ ] Replace the serif/sans stack with something intentional
 
 ## Running it

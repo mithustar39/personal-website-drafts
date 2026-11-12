@@ -118,16 +118,17 @@
 
   var files = {};
   files['now.txt'] = (S.now || '') +
-    ((S.education) ? '\nstudying: ' + S.education.degree.toLowerCase() + ' @ ' + S.education.school.toLowerCase() + ' (' + S.education.when + ')' : '');
+    ((S.education) ? '\nStudying: ' + S.education.degree + ' @ ' + S.education.school + ' (' + S.education.when + ')' : '') +
+    ((S.education && S.education.coursework) ? '\nCoursework: ' + S.education.coursework.join(', ') : '');
   files['about.txt'] = (S.about || []).join('\n\n');
   files['skills.txt'] = (S.skills || []).map(function(g){
     return pad(g.k, 11) + g.v.join(', ');
   }).join('\n');
   files['contact.txt'] =
-    'email     ' + (S.email || '') + '\n' +
-    'github    ' + (S.github || '') + '\n' +
-    'linkedin  ' + (S.linkedin || '') + '\n' +
-    'resume    ' + (S.resume || '');
+    'Email     ' + (S.email || '') + '\n' +
+    'GitHub    ' + (S.github || '') + '\n' +
+    'LinkedIn  ' + (S.linkedin || '') + '\n' +
+    'Resume    ' + (S.resume || '');
 
   function pad(s, n){ s = String(s); return s + new Array(Math.max(1, n - s.length + 1)).join(' '); }
 
@@ -137,23 +138,23 @@
   }
 
   function helpOut(){
-    emit('<span class="hdr">available commands</span>');
+    emit('<span class="hdr">Available commands</span>');
     [
-      ['whoami', 'who is this'],
+      ['whoami', 'Who is this'],
       ['cat &lt;file&gt;', 'now.txt, about.txt, skills.txt, contact.txt'],
-      ['ls', 'everything in ~'],
+      ['ls', 'Everything in ~'],
       ['open &lt;project&gt;', Object.keys(projects).join(', ')],
-      ['work', 'where the time went'],
-      ['contact', 'how to reach me'],
-      ['resume', 'grab the pdf'],
-      ['quiet', 'read the plain version'],
-      ['theme', 'flip light / dark'],
-      ['clear', 'wipe the screen']
+      ['work', 'Where the time went'],
+      ['contact', 'How to reach me'],
+      ['resume', 'Grab the PDF'],
+      ['quiet', 'Read the plain version'],
+      ['theme', 'Flip light / dark'],
+      ['clear', 'Wipe the screen']
     ].forEach(function(r){
       var w = 22 - r[0].replace(/&lt;|&gt;/g,'').length;
       emit('<span class="k">' + r[0] + '</span><span class="d">' + new Array(Math.max(1,w+1)).join(' ') + '</span>' + r[1]);
     });
-    emit('<span class="d">tip: \u2191/\u2193 history, tab completes, ctrl+L clears</span>');
+    emit('<span class="d">Tip: \u2191/\u2193 history, Tab completes, Ctrl+L clears</span>');
   }
 
   var commands = {
@@ -166,31 +167,31 @@
     work: function(){
       (S.work || []).forEach(function(j, i){
         if (i) gap();
-        emit('<span class="k">' + esc(j.role.toLowerCase()) + '</span>  <span class="d">' + esc(j.org) + ' \u00b7 ' + esc(j.where) + '</span>  <span class="w">' + esc(j.when) + '</span>');
+        emit('<span class="k">' + esc(j.role) + '</span>  <span class="d">' + esc(j.org) + ' \u00b7 ' + esc(j.where) + '</span>  <span class="w">' + esc(j.when) + '</span>');
         j.points.forEach(function(p){ text('  ' + p); });
       });
     },
     contact: function(){
-      link('email    ', 'mailto:' + S.email);
-      link('github   ', S.github);
-      link('linkedin ', S.linkedin);
+      link('Email    ', 'mailto:' + S.email);
+      link('GitHub   ', S.github);
+      link('LinkedIn ', S.linkedin);
     },
     resume: function(){
-      emit('<span class="d">opening</span> <a class="u" href="' + S.resume + '" target="_blank" rel="noopener">resume.pdf</a>');
+      emit('<span class="d">Opening</span> <a class="u" href="' + S.resume + '" target="_blank" rel="noopener">resume.pdf</a>');
     },
     quiet: function(){ go('plain', 'index.html'); },
     'recruiter': function(){ go('plain', 'index.html'); },
     exit: function(){ go('plain', 'index.html'); },
-    date: function(){ emit('<span class="d">' + new Date().toDateString().toLowerCase() + '</span>'); },
+    date: function(){ emit('<span class="d">' + new Date().toDateString() + '</span>'); },
     echo: function(args){ text(args.join(' ')); },
     theme: function(){
       document.body.classList.toggle('light');
       try { localStorage.setItem('mth-theme', document.body.classList.contains('light') ? 'light' : 'dark'); } catch(e){}
-      emit('<span class="d">theme \u2192 ' + (document.body.classList.contains('light') ? 'light' : 'dark') + '</span>');
+      emit('<span class="d">Theme \u2192 ' + (document.body.classList.contains('light') ? 'light' : 'dark') + '</span>');
     },
     sudo: function(){
-      emit('<span class="e">mithun is not in the sudoers file. this incident will be reported.</span>');
-      emit('<span class="d">\u2026to nobody. this is a static html file.</span>');
+      emit('<span class="e">Mithun is not in the sudoers file. This incident will be reported.</span>');
+      emit('<span class="d">\u2026to nobody. This is a static HTML file.</span>');
     },
     clear: function(){ out.innerHTML = ''; }
   };
@@ -213,7 +214,7 @@
 
     if (name === 'cat'){
       var f = (args[0] || '').toLowerCase();
-      if (!f){ emit('<span class="d">usage: cat &lt;file&gt;</span>'); lsOut(); return; }
+      if (!f){ emit('<span class="d">Usage: cat &lt;file&gt;</span>'); lsOut(); return; }
       if (files[f]) text(files[f]);
       else emit('<span class="e">cat: ' + esc(f) + ': no such file</span>');
       return;
@@ -232,7 +233,7 @@
     if (fn) fn(args);
     else {
       emit('<span class="e">zsh: command not found: ' + esc(name) + '</span>');
-      emit('<span class="d">try `help`</span>');
+      emit('<span class="d">Try `help`</span>');
     }
   }
 
@@ -241,7 +242,7 @@
   document.getElementById('theme').addEventListener('click', function(){ input.focus(); commands.theme(); });
 
   /* ---------- boot ---------- */
-  emit('<span class="d">last login: ' + new Date(Date.now()-864e5).toDateString().toLowerCase() + ' on ttys001</span>');
+  emit('<span class="d">Last login: ' + new Date(Date.now()-864e5).toDateString() + ' on ttys001</span>');
   gap();
   prompt('whoami');
   emit('<span class="out">' + esc(S.name) + '</span>');
@@ -253,8 +254,8 @@
   prompt('ls');
   lsOut();
   gap();
-  emit('<span class="d">type `help` to poke around. `open raven-scheduling` is a decent start.</span>');
-  emit('<span class="d">or `quiet` if you would rather read the normal version.</span>');
+  emit('<span class="d">Type `help` to poke around. `open raven-scheduling` is a decent start.</span>');
+  emit('<span class="d">Or `quiet` if you\'d rather read the plain version.</span>');
   gap();
 
   /* ---------- input ---------- */

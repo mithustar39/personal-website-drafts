@@ -82,7 +82,8 @@
   .job{margin:0 0 1.9rem}
   .job:last-child{margin-bottom:.2rem}
   .top{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-  .job h3{font-size:1rem;font-weight:600;letter-spacing:-.008em;margin:0}
+  .job h3, #education h3{font-size:1rem;font-weight:600;letter-spacing:-.008em;margin:0}
+  .course{margin:.6rem 0 0;font-size:.9rem;color:var(--muted);max-width:42em}
   .where{font-size:.93rem;color:var(--muted)}
   .when{font-family:var(--mono);font-size:.73rem;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
   ul.pts{margin:.55rem 0 0;padding:0;list-style:none;max-width:42em}
@@ -147,6 +148,7 @@
   </header>
 
   <section><div class="label">about</div><div class="body" id="about"></div></section>
+  <section><div class="label">education</div><div class="body" id="education"></div></section>
   <section><div class="label">work</div><div class="body" id="work"></div></section>
   <section><div class="label">things i made</div><div class="body" id="projects"></div></section>
   <section><div class="label">toolbox</div><div class="body" id="skills"></div></section>
@@ -203,6 +205,17 @@
   if (S.now) aboutHtml += '<div class="now">' + esc(S.now) + '</div>';
   S.about.forEach(function(p){ aboutHtml += '<p class="lede">' + esc(p) + '</p>'; });
   $("about").innerHTML = aboutHtml;
+
+  /* --- education --- */
+  if (S.education) {
+    var e = S.education;
+    $("education").innerHTML =
+      '<div class="top"><div>' +
+        '<h3>' + esc(e.school) + '</h3>' +
+        '<div class="where">' + esc(e.degree) + ' \u00b7 ' + esc(e.where) + '</div>' +
+      '</div><div class="when">' + esc(e.when) + '</div></div>' +
+      (e.coursework ? '<p class="course">Relevant coursework: ' + e.coursework.map(esc).join(', ') + '</p>' : '');
+  }
 
   /* --- work --- */
   $("work").innerHTML = S.work.map(function(j){
