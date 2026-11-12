@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mithun Dhanasuthan</title>
-<meta name="description" content="Mithun Dhanasuthan — computer systems engineering, Carleton University.">
+<meta name="description" content="Mithun Dhanasuthan, Computer Systems Engineering at Carleton University.">
 <link rel="icon" href="data:,">
 <style>
   :root{
@@ -84,11 +84,12 @@
   .top{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
   .job h3, #education h3{font-size:1rem;font-weight:600;letter-spacing:-.008em;margin:0}
   .course{margin:.6rem 0 0;font-size:.9rem;color:var(--muted);max-width:42em}
+  .edu + .edu{margin-top:1.2rem}
   .where{font-size:.93rem;color:var(--muted)}
   .when{font-family:var(--mono);font-size:.73rem;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
   ul.pts{margin:.55rem 0 0;padding:0;list-style:none;max-width:42em}
   ul.pts li{position:relative;padding-left:1.05rem;margin-bottom:.32rem;font-size:.93rem}
-  ul.pts li::before{content:"\2014";position:absolute;left:0;color:var(--faint)}
+  ul.pts li::before{content:"\00b7";position:absolute;left:0;color:var(--faint)}
 
   .proj{display:block;padding:.95rem 0;border-bottom:1px dotted var(--rule);text-decoration:none;color:inherit}
   .proj:last-child{border-bottom:0;padding-bottom:.2rem}
@@ -161,7 +162,7 @@
 
   <noscript>
     <p style="font-family:monospace;font-size:.85rem">
-      Mithun Dhanasuthan &mdash;
+      Mithun Dhanasuthan &middot;
       <a href="mailto:dmithun2022@gmail.com">email</a> &middot;
       <a href="https://github.com/mithustar39">github</a> &middot;
       <a href="https://www.linkedin.com/in/mithun-dhanasuthan">linkedin</a> &middot;
@@ -208,13 +209,17 @@
 
   /* --- education --- */
   if (S.education) {
-    var e = S.education;
-    $("education").innerHTML =
-      '<div class="top"><div>' +
-        '<h3>' + esc(e.school) + '</h3>' +
-        '<div class="where">' + esc(e.degree) + ' \u00b7 ' + esc(e.where) + '</div>' +
-      '</div><div class="when">' + esc(e.when) + '</div></div>' +
-      (e.coursework ? '<p class="course">Relevant coursework: ' + e.coursework.map(esc).join(', ') + '</p>' : '');
+    var eduList = Array.isArray(S.education) ? S.education : [S.education];
+    $("education").innerHTML = eduList.map(function(e){
+      var notes = (e.notes || []).map(function(n){ return '<p class="course">' + esc(n) + '</p>'; }).join("");
+      return '<div class="edu">' +
+        '<div class="top"><div>' +
+          '<h3>' + esc(e.school) + '</h3>' +
+          '<div class="where">' + esc(e.degree) + ' \u00b7 ' + esc(e.where) + '</div>' +
+        '</div><div class="when">' + esc(e.when) + '</div></div>' +
+        notes +
+      '</div>';
+    }).join("");
   }
 
   /* --- work --- */

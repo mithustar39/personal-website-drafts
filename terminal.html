@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>mithun@ottawa:~$</title>
-<meta name="description" content="Mithun Dhanasuthan — computer systems engineering, Carleton University.">
+<meta name="description" content="Mithun Dhanasuthan, Computer Systems Engineering at Carleton University.">
 <link rel="icon" href="data:,">
 <style>
   :root{
@@ -69,7 +69,7 @@
 <body>
   <div class="bar">
     <span class="dots"><i></i><i></i><i></i></span>
-    <span class="title">mithun@ottawa &mdash; zsh &mdash; 96&times;30</span>
+    <span class="title">mithun@ottawa &middot; zsh &middot; 96&times;30</span>
     <span class="grow"></span>
     <a class="btn" href="index.html" data-path="plain">plain view</a>
     <button id="theme" type="button">theme</button>
@@ -117,9 +117,12 @@
   });
 
   var files = {};
-  files['now.txt'] = (S.now || '') +
-    ((S.education) ? '\nStudying: ' + S.education.degree + ' @ ' + S.education.school + ' (' + S.education.when + ')' : '') +
-    ((S.education && S.education.coursework) ? '\nCoursework: ' + S.education.coursework.join(', ') : '');
+  var eduList = Array.isArray(S.education) ? S.education : (S.education ? [S.education] : []);
+  files['now.txt'] = (S.now || '');
+  eduList.forEach(function(e){
+    files['now.txt'] += '\n' + e.school + ': ' + e.degree + ' (' + e.when + ')';
+    (e.notes || []).forEach(function(n){ files['now.txt'] += '\n  ' + n; });
+  });
   files['about.txt'] = (S.about || []).join('\n\n');
   files['skills.txt'] = (S.skills || []).map(function(g){
     return pad(g.k, 11) + g.v.join(', ');
@@ -161,7 +164,7 @@
     help: helpOut,
     whoami: function(){
       emit('<span class="out">' + esc(S.name) + '</span>');
-      emit('<span class="d">' + esc(S.role) + ' \u2014 ' + esc(S.school) + ', ' + esc(S.location) + '</span>');
+      emit('<span class="d">' + esc(S.role) + ', ' + esc(S.school) + ', ' + esc(S.location) + '</span>');
     },
     ls: lsOut,
     work: function(){
@@ -246,7 +249,7 @@
   gap();
   prompt('whoami');
   emit('<span class="out">' + esc(S.name) + '</span>');
-  emit('<span class="d">' + esc(S.role) + ' \u2014 ' + esc(S.school) + ', ' + esc(S.location) + '</span>');
+  emit('<span class="d">' + esc(S.role) + ', ' + esc(S.school) + ', ' + esc(S.location) + '</span>');
   gap();
   prompt('cat now.txt');
   text(files['now.txt']);
